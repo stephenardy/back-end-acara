@@ -13,7 +13,7 @@ const doc = {
       description: "Local Server",
     },
     {
-      url: "https://back-end-acara-navy.vercel.app/",
+      url: "https://back-end-acara-navy.vercel.app/api",
       description: "Deploy Server",
     },
   ],
