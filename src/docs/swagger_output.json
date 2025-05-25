@@ -18,6 +18,9 @@
   "paths": {
     "/auth/register": {
       "post": {
+        "tags": [
+          "Auth"
+        ],
         "description": "",
         "responses": {
           "200": {
@@ -28,27 +31,16 @@
           }
         },
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "fullName": {
-                    "example": "any"
-                  },
-                  "username": {
-                    "example": "any"
-                  },
-                  "email": {
-                    "example": "any"
-                  },
-                  "password": {
-                    "example": "any"
-                  },
-                  "confirmPassword": {
-                    "example": "any"
-                  }
-                }
+                "$ref": "#/components/schemas/RegistrationRequest"
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "$ref": "#/components/schemas/RegistrationRequest"
               }
             }
           }
@@ -57,6 +49,9 @@
     },
     "/auth/login": {
       "post": {
+        "tags": [
+          "Auth"
+        ],
         "description": "",
         "responses": {
           "200": {
@@ -74,12 +69,12 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/loginRequest"
+                "$ref": "#/components/schemas/LoginRequest"
               }
             },
             "application/xml": {
               "schema": {
-                "$ref": "#/components/schemas/loginRequest"
+                "$ref": "#/components/schemas/LoginRequest"
               }
             }
           }
@@ -88,6 +83,9 @@
     },
     "/auth/me": {
       "get": {
+        "tags": [
+          "Auth"
+        ],
         "description": "",
         "responses": {
           "200": {
@@ -106,6 +104,37 @@
           }
         ]
       }
+    },
+    "/auth/activation": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ActivationRequest"
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "$ref": "#/components/schemas/ActivationRequest"
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -116,7 +145,7 @@
       }
     },
     "schemas": {
-      "loginRequest": {
+      "LoginRequest": {
         "type": "object",
         "properties": {
           "identifier": {
@@ -129,7 +158,47 @@
           }
         },
         "xml": {
-          "name": "loginRequest"
+          "name": "LoginRequest"
+        }
+      },
+      "RegistrationRequest": {
+        "type": "object",
+        "properties": {
+          "fullName": {
+            "type": "string",
+            "example": "joni joni"
+          },
+          "username": {
+            "type": "string",
+            "example": "joni2025"
+          },
+          "email": {
+            "type": "string",
+            "example": "joni.jon@yopmail.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "12345678"
+          },
+          "confirmPassword": {
+            "type": "string",
+            "example": "12345678"
+          }
+        },
+        "xml": {
+          "name": "RegistrationRequest"
+        }
+      },
+      "ActivationRequest": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "example": "abcdefg"
+          }
+        },
+        "xml": {
+          "name": "ActivationRequest"
         }
       }
     }

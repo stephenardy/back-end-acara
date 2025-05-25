@@ -25,9 +25,19 @@ const doc = {
       },
     },
     schemas: {
-      loginRequest: {
+      LoginRequest: {
         identifier: "ardystephen",
         password: "12341234",
+      },
+      RegistrationRequest: {
+        fullName: "joni joni",
+        username: "joni2025",
+        email: "joni.jon@yopmail.com",
+        password: "12345678",
+        confirmPassword: "12345678",
+      },
+      ActivationRequest: {
+        code: "abcdefg",
       },
     },
   },
