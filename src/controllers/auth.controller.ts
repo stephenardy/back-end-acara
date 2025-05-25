@@ -66,6 +66,16 @@ export default {
         confirmPassword,
       });
 
+      const existingUser = await UserModel.findOne({
+        $or: [{ email }, { username }],
+      });
+      if (existingUser) {
+        return res.status(400).json({
+          message: "email or username already registered",
+          data: null,
+        });
+      }
+
       const result = await UserModel.create({
         fullName,
         username,
@@ -181,6 +191,13 @@ export default {
         { isActive: true },
         { new: true } // update dilakukan sebelum return object user
       );
+
+      if (!user) {
+        return res.status(404).json({
+          message: "Invalid activation code",
+          data: null,
+        });
+      }
 
       res.status(200).json({
         message: "Successfully activate user account",
