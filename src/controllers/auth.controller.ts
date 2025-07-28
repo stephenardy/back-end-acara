@@ -106,9 +106,16 @@ export default {
      */
     const { identifier, password } = req.body as unknown as Tlogin;
     try {
-      // ambil data user berdasarkan identifier -> email || username
+      // ambil data user berdasarkan "identifier" -> email || username
       const userByIdentifier = await UserModel.findOne({
-        $or: [{ email: identifier }, { username: identifier }],
+        $or: [
+          {
+            email: identifier,
+          },
+          {
+            username: identifier,
+          },
+        ],
         isActive: true,
       });
 
