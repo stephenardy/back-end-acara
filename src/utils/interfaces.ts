@@ -20,3 +20,9 @@ export interface IUserToken
   > {
   id?: Types.ObjectId; // ambil id juga
 }
+
+export interface IPaginationQuery {
+  page: number;
+  limit: number;
+  search?: string;
+}
