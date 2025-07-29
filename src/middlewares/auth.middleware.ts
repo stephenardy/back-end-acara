@@ -1,9 +1,6 @@
 import { NextFunction, Request, Response } from "express";
-import { getUserData, IUserToken } from "../utils/jwt";
-
-export interface IReqUser extends Request {
-  user?: IUserToken;
-}
+import { getUserData } from "../utils/jwt";
+import { IReqUser } from "../utils/interfaces";
 
 export default (req: Request, res: Response, next: NextFunction) => {
   const authHeader = req.headers?.authorization;
