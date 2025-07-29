@@ -4,6 +4,7 @@ import UserModel from "../models/user.model";
 import { encrypt } from "../utils/encryption";
 import { generateAccessToken } from "../utils/jwt";
 import { IReqUser } from "../utils/interfaces";
+import response from "../utils/response";
 
 type TRegister = {
   fullName: string;
@@ -70,10 +71,11 @@ export default {
         $or: [{ email }, { username }],
       });
       if (existingUser) {
-        return res.status(400).json({
-          message: "email or username already registered",
-          data: null,
-        });
+        return response.error(
+          res,
+          null,
+          "email or username already registered"
+        );
       }
 
       const result = await UserModel.create({
@@ -83,16 +85,9 @@ export default {
         password,
       });
 
-      res.status(200).json({
-        message: "Register Successful!",
-        data: result,
-      });
+      response.success(res, result, "Register Successful!");
     } catch (error) {
-      const err = error as unknown as Error;
-      res.status(400).json({
-        message: err.message,
-        data: null,
-      });
+      response.error(res, error, "Failed Registration");
     }
   },
 
@@ -120,10 +115,7 @@ export default {
       });
 
       if (!userByIdentifier) {
-        return res.status(403).json({
-          message: "User not found",
-          data: null,
-        });
+        return response.unauthorized(res, "User not found");
       }
 
       // validasi password
@@ -131,10 +123,7 @@ export default {
         encrypt(password) === userByIdentifier.password;
 
       if (!validatePassword) {
-        return res.status(403).json({
-          message: "User not found",
-          data: null,
-        });
+        return response.unauthorized(res, "User not found");
       }
 
       // Generate Token
@@ -143,16 +132,9 @@ export default {
         role: userByIdentifier.role,
       });
 
-      res.status(200).json({
-        message: "User found",
-        data: accessToken,
-      });
+      response.success(res, accessToken, "User found");
     } catch (error) {
-      const err = error as unknown as Error;
-      res.status(400).json({
-        message: err.message,
-        data: null,
-      });
+      response.error(res, error, "Login failed");
     }
   },
 
@@ -168,16 +150,9 @@ export default {
       const user = req.user;
       const result = await UserModel.findById(user?.id);
 
-      res.status(200).json({
-        message: "Success get user profile",
-        data: result,
-      });
+      response.success(res, result, "Success get user profile");
     } catch (error) {
-      const err = error as unknown as Error;
-      res.status(400).json({
-        message: err.message,
-        data: null,
-      });
+      response.error(res, error, "failed get user profile");
     }
   },
 
@@ -200,22 +175,12 @@ export default {
       );
 
       if (!user) {
-        return res.status(404).json({
-          message: "Invalid activation code",
-          data: null,
-        });
+        return response.error(res, null, "Invalid activation code");
       }
 
-      res.status(200).json({
-        message: "Successfully activate user account",
-        data: user,
-      });
+      response.success(res, user, "Successfully activate user account");
     } catch (error) {
-      const err = error as unknown as Error;
-      res.status(400).json({
-        message: err.message,
-        data: null,
-      });
+      response.error(res, error, "failed activate user account");
     }
   },
 };
