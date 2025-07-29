@@ -6,6 +6,7 @@ import { ROLES } from "../utils/constant";
 import mediaMiddleware from "../middlewares/media.middleware";
 import mediaController from "../controllers/media.controller";
 import categoryController from "../controllers/category.controller";
+import regionController from "../controllers/region.controller";
 
 const router = express.Router();
 
@@ -55,5 +56,12 @@ router.delete(
   [authMiddleware, aclMiddleware([ROLES.ADMIN])],
   categoryController.remove
 );
+
+router.get("/regions", regionController.getAllProvinces);
+router.get("/regions/:id/province", regionController.getProvince);
+router.get("/regions/:id/regency", regionController.getRegency);
+router.get("/regions/:id/district", regionController.getDistrict);
+router.get("/regions/:id/village", regionController.getVillage);
+router.get("/regions-search", regionController.findByCity);
 
 export default router;
