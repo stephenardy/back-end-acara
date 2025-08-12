@@ -9,6 +9,7 @@ import categoryController from "../controllers/category.controller";
 import regionController from "../controllers/region.controller";
 import eventController from "../controllers/event.controller";
 import ticketController from "../controllers/ticket.controller";
+import bannerController from "../controllers/banner.controller";
 
 const router = express.Router();
 
@@ -17,6 +18,25 @@ router.post("/auth/register", authController.register);
 router.post("/auth/login", authController.login);
 router.get("/auth/me", authMiddleware, authController.me);
 router.post("/auth/activation", authController.activation);
+
+// ----- Banner API -----
+router.post(
+  "/banners",
+  [authMiddleware, aclMiddleware([ROLES.ADMIN])],
+  bannerController.create
+);
+router.get("/banners", bannerController.findAll);
+router.get("/banners/:id", bannerController.findOne);
+router.put(
+  "/banners/:id",
+  [authMiddleware, aclMiddleware([ROLES.ADMIN])],
+  bannerController.update
+);
+router.delete(
+  "/banners/:id",
+  [authMiddleware, aclMiddleware([ROLES.ADMIN])],
+  bannerController.remove
+);
 
 // ----- Tickets API -----
 router.post(
