@@ -8,14 +8,37 @@ import mediaController from "../controllers/media.controller";
 import categoryController from "../controllers/category.controller";
 import regionController from "../controllers/region.controller";
 import eventController from "../controllers/event.controller";
+import ticketController from "../controllers/ticket.controller";
 
 const router = express.Router();
 
+// ----- Auth API -----
 router.post("/auth/register", authController.register);
 router.post("/auth/login", authController.login);
 router.get("/auth/me", authMiddleware, authController.me);
 router.post("/auth/activation", authController.activation);
 
+// ----- Tickets API -----
+router.post(
+  "/tickets",
+  [authMiddleware, aclMiddleware([ROLES.ADMIN])],
+  ticketController.create
+);
+router.get("/tickets", ticketController.findAll);
+router.get("/tickets/:id", ticketController.findOne);
+router.put(
+  "/tickets/:id",
+  [authMiddleware, aclMiddleware([ROLES.ADMIN])],
+  ticketController.update
+);
+router.delete(
+  "/tickets/:id",
+  [authMiddleware, aclMiddleware([ROLES.ADMIN])],
+  ticketController.remove
+);
+router.get("/tickets/:eventId/events", ticketController.findAllByEvent);
+
+// ----- Media API -----
 router.post(
   "/media/upload-single",
   [
@@ -99,6 +122,7 @@ router.delete(
   */
 );
 
+// ----- Category API -----
 router.post(
   "/category",
   [authMiddleware, aclMiddleware([ROLES.ADMIN])],
@@ -159,6 +183,7 @@ router.delete(
   */
 );
 
+// ----- Events API -----
 router.post(
   "/events",
   [authMiddleware, aclMiddleware([ROLES.ADMIN])],
@@ -226,6 +251,7 @@ router.get(
   */
 );
 
+// ----- Regions API -----
 router.get(
   "/regions",
   regionController.getAllProvinces
