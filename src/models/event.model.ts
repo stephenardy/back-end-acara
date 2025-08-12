@@ -102,7 +102,7 @@ const EventSchema = new Schema<Event>(
   {
     timestamps: true,
   }
-);
+).index({ name: "text" });
 
 // dijalankan sebelum data tersimpan
 EventSchema.pre("save", function () {
