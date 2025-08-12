@@ -62,10 +62,15 @@ export default {
   async findOne(req: IReqUser, res: Response) {
     try {
       const { id } = req.params;
+
+      if (!isValidObjectId(id)) {
+        return response.notFound(res, "ticket not found");
+      }
+
       const result = await TicketModel.findById(id);
 
       if (!result) {
-        return response.notFound(res, "Ticket not found");
+        return response.notFound(res, "ticket not found");
       }
 
       response.success(res, result, "success find a ticket");
@@ -76,6 +81,11 @@ export default {
   async update(req: IReqUser, res: Response) {
     try {
       const { id } = req.params;
+
+      if (!isValidObjectId(id)) {
+        return response.notFound(res, "ticket not found");
+      }
+
       const result = await TicketModel.findByIdAndUpdate(id, req.body, {
         new: true,
       });
@@ -87,6 +97,11 @@ export default {
   async remove(req: IReqUser, res: Response) {
     try {
       const { id } = req.params;
+
+      if (!isValidObjectId(id)) {
+        return response.notFound(res, "ticket not found");
+      }
+
       const result = await TicketModel.findByIdAndDelete(id, {
         new: true,
       });
