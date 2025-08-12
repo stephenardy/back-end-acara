@@ -63,6 +63,19 @@ const doc = {
       RemoveMediaRequest: {
         fileUrl: "",
       },
+      CreateBannerRequest: {
+        title: "Banner title",
+        image:
+          "https://res.cloudinary.com/drjndjjo0/image/upload/v1754970915/xanhf4vvzetrhlhqppfj.jpg",
+        isShow: false,
+      },
+      CreateTicketRequest: {
+        price: 12000,
+        name: "ticket title",
+        events: "eventId",
+        description: "ticket description",
+        quantity: 120,
+      },
     },
   },
 };
