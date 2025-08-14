@@ -28,10 +28,10 @@ export const eventDAO = Yup.object({
     .required(),
 });
 
-export type TEvent = Yup.InferType<typeof eventDAO>;
+export type TypeEvent = Yup.InferType<typeof eventDAO>;
 
 // remove category dan createdBy yg di eventDAO dan tambahin yg baru yg di reference dari model user dan category
-export interface Event extends Omit<TEvent, "category" | "createdBy"> {
+export interface Event extends Omit<TypeEvent, "category" | "createdBy"> {
   category: ObjectId; // //ambil dari category model
   createdBy: ObjectId; //ambil dari user model
 }
