@@ -1,5 +1,5 @@
 import { Response } from "express";
-import { IPaginationQuery, IReqUser } from "../utils/interfaces";
+import { IReqUser } from "../utils/interfaces";
 import response from "../utils/response";
 import EventModel, { eventDAO, TypeEvent } from "../models/event.model";
 import { FilterQuery, isValidObjectId } from "mongoose";
@@ -61,6 +61,7 @@ export default {
         .limit(+limit) // kasih + didepan untuk tandain kalau itu adalah integer
         .skip((+page - 1) * +limit)
         .sort({ createdAt: -1 })
+        .lean() // optimize hasil query
         .exec();
 
       const count = await EventModel.countDocuments(query);
