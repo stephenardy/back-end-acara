@@ -5,13 +5,14 @@ const Schema = mongoose.Schema; //#1
 
 //#2
 //DAO = Data Access Object -> skema validasi
-export const categoryDAO = Yup.object({
+//DTO =
+export const categoryDTO = Yup.object({
   name: Yup.string().required(),
   description: Yup.string().required(),
   icon: Yup.string().required(),
 });
 
-export type Category = Yup.InferType<typeof categoryDAO>; //#3
+export type Category = Yup.InferType<typeof categoryDTO>; //#3
 
 //#4
 const CategorySchema = new Schema<Category>(

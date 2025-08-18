@@ -5,7 +5,7 @@ export const EVENT_MODEL_NAME = "Event";
 
 const Schema = mongoose.Schema;
 
-export const eventDAO = Yup.object({
+export const eventDTO = Yup.object({
   name: Yup.string().required(),
   startDate: Yup.string().required(),
   endDate: Yup.string().required(),
@@ -28,9 +28,9 @@ export const eventDAO = Yup.object({
     .required(),
 });
 
-export type TypeEvent = Yup.InferType<typeof eventDAO>;
+export type TypeEvent = Yup.InferType<typeof eventDTO>;
 
-// remove category dan createdBy yg di eventDAO dan tambahin yg baru yg di reference dari model user dan category
+// remove category dan createdBy yg di eventDTO dan tambahin yg baru yg di reference dari model user dan category
 export interface Event extends Omit<TypeEvent, "category" | "createdBy"> {
   category: ObjectId; // //ambil dari category model
   createdBy: ObjectId; //ambil dari user model

@@ -1,6 +1,10 @@
 import { Request, Response } from "express";
 import * as Yup from "yup";
-import UserModel from "../models/user.model";
+import UserModel, {
+  userDTO,
+  userLoginDTO,
+  userUpdatePasswordDTO,
+} from "../models/user.model";
 import { encrypt } from "../utils/encryption";
 import { generateAccessToken } from "../utils/jwt";
 import { IReqUser } from "../utils/interfaces";
@@ -47,19 +51,68 @@ const registerValidateSchema = Yup.object({
 });
 
 export default {
+  async updateProfile(req: IReqUser, res: Response) {
+    try {
+      const userId = req.user?.id;
+      const { fullName, profilePicture } = req.body; // request body data ini
+
+      const result = await UserModel.findByIdAndUpdate(
+        userId,
+        {
+          fullName,
+          profilePicture,
+        },
+        {
+          new: true,
+        }
+      );
+
+      if (!result) return response.notFound(res, "user not found");
+
+      response.success(res, result, "success update profile");
+    } catch (error) {
+      response.error(res, error, "failed to update profile");
+    }
+  },
+
+  async updatePassword(req: IReqUser, res: Response) {
+    const userId = req.user?.id;
+    const { oldPassword, password, confirmPassword } = req.body; // request body data ini
+
+    await userUpdatePasswordDTO.validate({
+      oldPassword,
+      password,
+      confirmPassword,
+    });
+
+    const user = await UserModel.findById(userId);
+
+    // kalau user gak ada atau password existing tidak terdaftar
+    if (!user || user.password !== encrypt(oldPassword))
+      return response.notFound(res, "user not found");
+
+    const result = await UserModel.findByIdAndUpdate(
+      userId,
+      {
+        password: encrypt(password),
+      },
+      {
+        new: true,
+      }
+    );
+
+    response.success(res, result, "success update password");
+    try {
+    } catch (error) {
+      response.error(res, error, "failed to update password");
+    }
+  },
+
   async register(req: Request, res: Response) {
-    /**
-     #swagger.tags = ['Auth']
-     #swagger.requestBody = {
-      required: true,
-      schema: {$ref:"#/components/schemas/RegistrationRequest"}
-     }
-     */
-    const { fullName, username, email, password, confirmPassword } =
-      req.body as unknown as TRegister;
+    const { fullName, username, email, password, confirmPassword } = req.body;
 
     try {
-      await registerValidateSchema.validate({
+      await userDTO.validate({
         fullName,
         username,
         email,
@@ -92,15 +145,15 @@ export default {
   },
 
   async login(req: Request, res: Response) {
-    /**
-     #swagger.tags = ['Auth']
-     #swagger.requestBody = {
-      required: true,
-      schema: {$ref:"#/components/schemas/LoginRequest"}
-     }
-     */
-    const { identifier, password } = req.body as unknown as Tlogin;
     try {
+      const { identifier, password } = req.body;
+
+      // validate login input
+      await userLoginDTO.validate({
+        identifier,
+        password,
+      });
+
       // ambil data user berdasarkan "identifier" -> email || username
       const userByIdentifier = await UserModel.findOne({
         $or: [
@@ -139,13 +192,6 @@ export default {
   },
 
   async me(req: IReqUser, res: Response) {
-    /**
-     #swagger.tags = ['Auth']
-     #swagger.security = [{
-      "bearerAuth": []
-     }]
-     */
-
     try {
       const user = req.user;
       const result = await UserModel.findById(user?.id);
@@ -157,14 +203,6 @@ export default {
   },
 
   async activation(req: Request, res: Response) {
-    /**
-     #swagger.tags=['Auth']
-     #swagger.requestBody={
-      required:true,
-      schema:{$ref:'#/components/schemas/ActivationRequest'}
-     }
-     */
-
     try {
       const { code } = req.body as { code: string };
 

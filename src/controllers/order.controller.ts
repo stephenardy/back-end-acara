@@ -2,7 +2,7 @@ import { Response } from "express";
 import { IReqUser } from "../utils/interfaces";
 import response from "../utils/response";
 import OrderModel, {
-  orderDAO,
+  orderDTO,
   OrderStatus,
   TypeOrder,
   TypeVoucher,
@@ -20,7 +20,7 @@ export default {
         createdBy: userId,
       } as TypeOrder;
 
-      await orderDAO.validate(payload);
+      await orderDTO.validate(payload);
 
       // cek tiket dan quantity nya
       const ticket = await TicketModel.findById(payload.ticket);

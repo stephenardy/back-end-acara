@@ -3,13 +3,13 @@ import * as Yup from "yup";
 
 export const BANNER_MODEL_NAME = "Banner";
 
-export const BannerDAO = Yup.object({
+export const bannerDTO = Yup.object({
   title: Yup.string().required(),
   image: Yup.string().required(),
   isShow: Yup.boolean().required(),
 });
 
-export type TypeBanner = Yup.InferType<typeof BannerDAO>;
+export type TypeBanner = Yup.InferType<typeof bannerDTO>;
 
 interface Banner extends TypeBanner {}
 
