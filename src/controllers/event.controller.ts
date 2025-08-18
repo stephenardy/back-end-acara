@@ -3,6 +3,7 @@ import { IReqUser } from "../utils/interfaces";
 import response from "../utils/response";
 import EventModel, { eventDTO, TypeEvent } from "../models/event.model";
 import { FilterQuery, isValidObjectId } from "mongoose";
+import uploader from "../utils/uploader";
 
 export default {
   async create(req: IReqUser, res: Response) {
@@ -105,13 +106,12 @@ export default {
     try {
       const { id } = req.params;
 
-      if (!isValidObjectId(id)) {
-        return response.notFound(res, "event not found");
-      }
-
       const result = await EventModel.findByIdAndUpdate(id, req.body, {
         new: true, // supaya data langsung berubah setelah di update
       });
+
+      if (!result) return response.notFound(res, "event not found");
+
       response.success(res, result, "success update an event");
     } catch (error) {
       response.error(res, error, "failed to update an event");
@@ -122,13 +122,14 @@ export default {
     try {
       const { id } = req.params;
 
-      if (!isValidObjectId(id)) {
-        return response.notFound(res, "event not found");
-      }
-
       const result = await EventModel.findByIdAndDelete(id, {
         new: true,
       });
+
+      if (!result) return response.notFound(res, "event not found");
+
+      await uploader.remove(result?.banner);
+
       response.success(res, result, "success remove an event");
     } catch (error) {
       response.error(res, error, "failed to remove an event");
