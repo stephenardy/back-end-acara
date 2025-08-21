@@ -199,12 +199,12 @@ export default {
       userByIdentifier.refreshToken = refreshToken;
       await userByIdentifier.save();
 
-      // response.successWithCookie(
-      //   res,
-      //   { accessToken, refreshToken },
-      //   "User found"
-      // );
-      response.success(res, { accessToken }, "User login successfuly");
+      response.successWithCookie(
+        res,
+        { accessToken, refreshToken },
+        "User found"
+      );
+      // response.success(res, { accessToken }, "User login successfuly");
     } catch (error) {
       response.error(res, error, "Login failed");
     }
