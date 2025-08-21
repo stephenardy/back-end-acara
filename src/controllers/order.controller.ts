@@ -61,15 +61,6 @@ export default {
         search,
       });
 
-      if (search) {
-        Object.assign(query, {
-          ...query,
-          $text: {
-            $search: search,
-          },
-        });
-      }
-
       const result = await OrderModel.find(query)
         .limit(+limit) // kasih + didepan untuk tandain kalau itu adalah integer
         .skip((+page - 1) * +limit)
@@ -124,15 +115,6 @@ export default {
       const query = buildQuery({
         search,
       });
-
-      if (search) {
-        Object.assign(query, {
-          ...query,
-          $text: {
-            $search: search,
-          },
-        });
-      }
 
       const result = await OrderModel.find(query)
         .limit(+limit) // kasih + didepan untuk tandain kalau itu adalah integer

@@ -38,6 +38,7 @@ export interface Order
   events: ObjectId;
   orderId: string;
   ticket: ObjectId;
+  quantity: number;
   vouchers: TypeVoucher[];
 }
 
