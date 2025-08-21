@@ -125,23 +125,25 @@ UserSchema.pre("save", function (next) {
 // Dilakukan setelah object user terbentuk (save)
 UserSchema.post("save", async function (doc, next) {
   try {
-    const user = doc;
-    console.log("Send Email to:", user.email);
+    if (doc.isNew) {
+      const user = doc;
+      console.log("Send Email to:", user.email);
 
-    const contentMail = await renderMailHTML("registration-success.ejs", {
-      username: user.username,
-      fullName: user.fullName,
-      email: user.email,
-      createdAt: user.createdAt,
-      activationLink: `${CLIENT_HOST}/auth/activation?code=${user.activationCode}`,
-    });
+      const contentMail = await renderMailHTML("registration-success.ejs", {
+        username: user.username,
+        fullName: user.fullName,
+        email: user.email,
+        createdAt: user.createdAt,
+        activationLink: `${CLIENT_HOST}/auth/activation?code=${user.activationCode}`,
+      });
 
-    await sendMail({
-      from: EMAIL_SMTP_USER,
-      to: user.email,
-      subject: "Aktivasi Akun Anda",
-      html: contentMail,
-    });
+      await sendMail({
+        from: EMAIL_SMTP_USER,
+        to: user.email,
+        subject: "Aktivasi Akun Anda",
+        html: contentMail,
+      });
+    }
   } catch (error) {
     console.log("Error:", error);
   } finally {
