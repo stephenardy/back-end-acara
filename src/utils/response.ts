@@ -97,4 +97,20 @@ export default {
       pagination,
     });
   },
+
+  // Success and store data (refresh token) in cookie
+  successWithCookie(res: Response, data: any, message: string) {
+    res
+      .cookie("refreshToken", data.refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production", // only https in prod
+        sameSite: "strict",
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      })
+      .json({
+        success: true,
+        message,
+        data: { accessToken: data.accessToken },
+      });
+  },
 };

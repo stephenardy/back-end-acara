@@ -6,9 +6,14 @@ import UserModel, {
   userUpdatePasswordDTO,
 } from "../models/user.model";
 import { encrypt } from "../utils/encryption";
-import { generateAccessToken } from "../utils/jwt";
+import {
+  generateAccessToken,
+  generateRefreshToken,
+  verifyRefreshToken,
+} from "../utils/jwt";
 import { IReqUser } from "../utils/interfaces";
 import response from "../utils/response";
+import { JwtPayload } from "jsonwebtoken";
 
 type TRegister = {
   fullName: string;
@@ -176,7 +181,7 @@ export default {
         encrypt(password) === userByIdentifier.password;
 
       if (!validatePassword) {
-        return response.unauthorized(res, "User not found");
+        return response.unauthorized(res, "Password not match");
       }
 
       // Generate Token
@@ -185,7 +190,21 @@ export default {
         role: userByIdentifier.role,
       });
 
-      response.success(res, accessToken, "User found");
+      // Generate and safe refresh token
+      const refreshToken = generateRefreshToken({
+        id: userByIdentifier._id,
+        role: userByIdentifier.role,
+      });
+
+      userByIdentifier.refreshToken = refreshToken;
+      await userByIdentifier.save();
+
+      // response.successWithCookie(
+      //   res,
+      //   { accessToken, refreshToken },
+      //   "User found"
+      // );
+      response.success(res, { accessToken }, "User login successfuly");
     } catch (error) {
       response.error(res, error, "Login failed");
     }
@@ -196,7 +215,7 @@ export default {
       const user = req.user;
       const result = await UserModel.findById(user?.id);
 
-      response.success(res, result, "Success get user profile");
+      response.success(res, result, "success get user profile");
     } catch (error) {
       response.error(res, error, "failed get user profile");
     }
@@ -216,9 +235,45 @@ export default {
         return response.error(res, null, "Invalid activation code");
       }
 
-      response.success(res, user, "Successfully activate user account");
+      response.success(res, user, "successfully activate user account");
     } catch (error) {
       response.error(res, error, "failed activate user account");
+    }
+  },
+
+  async refresh(req: Request, res: Response) {
+    try {
+      const { token } = req.body;
+      if (!token) return response.error(res, null, "no refresh token provided");
+
+      const decoded = verifyRefreshToken(token) as JwtPayload;
+      const user = await UserModel.findById(decoded.id);
+      if (!user) return response.notFound(res, "user not found");
+
+      if (user.refreshToken !== token) {
+        return response.unauthorized(res, "invalid refresh token");
+      }
+
+      const newAccessToken = generateAccessToken({
+        id: user.id,
+        role: user.role,
+      });
+
+      const newRefreshToken = generateRefreshToken({
+        id: user.id,
+        role: user.role,
+      });
+
+      user.refreshToken = newRefreshToken;
+      await user.save();
+
+      response.success(
+        res,
+        { accessToken: newAccessToken, refreshToken: newRefreshToken },
+        "success refresh token"
+      );
+    } catch (error) {
+      response.error(res, error, "invalid refresh token");
     }
   },
 };

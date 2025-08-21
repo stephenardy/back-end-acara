@@ -54,6 +54,7 @@ export interface User extends Omit<TypeUser, "confirmPassword"> {
   role: string;
   isActive: boolean;
   activationCode: string;
+  refreshToken?: string | null;
   createdAt?: string;
 }
 
@@ -92,6 +93,10 @@ const UserSchema = new Schema<User>(
       type: Schema.Types.Boolean,
       default: false,
     },
+    refreshToken: {
+      type: Schema.Types.String,
+      default: null,
+    },
     activationCode: {
       type: Schema.Types.String,
     },
@@ -102,10 +107,18 @@ const UserSchema = new Schema<User>(
 );
 
 // Dilakukan sebelum object user terbentuk (save)
+// password di enkripsi dan activationCode dibuat melalui enkripsi id user
 UserSchema.pre("save", function (next) {
   const user = this;
-  user.password = encrypt(user.password);
-  user.activationCode = encrypt(user.id);
+
+  if (user.isModified("password")) {
+    user.password = encrypt(user.password);
+  }
+
+  if (user.isModified("_id")) {
+    user.activationCode = encrypt(user.id);
+  }
+
   next();
 });
 
@@ -136,9 +149,17 @@ UserSchema.post("save", async function (doc, next) {
   }
 });
 
+// remove ini agar tidak terlihat oleh user
 UserSchema.methods.toJSON = function () {
   const user = this.toObject();
+
   delete user.password;
+  delete user.refreshToken;
+  delete user.createdAt;
+  delete user.updatedAt;
+  delete user.activationCode;
+  delete user.__v;
+
   return user;
 };
 

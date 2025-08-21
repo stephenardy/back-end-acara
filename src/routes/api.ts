@@ -68,7 +68,7 @@ router.post(
 
 router.put(
   "/auth/update-profile",
-  [authMiddleware, aclMiddleware([ROLES.MEMBER, ROLES.ADMIN])],
+  [authMiddleware, aclMiddleware([ROLES.MEMBER])],
   authController.updateProfile
   /*
   #swagger.tags = ['Auth']
@@ -86,7 +86,7 @@ router.put(
 
 router.put(
   "/auth/update-password",
-  [authMiddleware, aclMiddleware([ROLES.MEMBER, ROLES.ADMIN])],
+  [authMiddleware, aclMiddleware([ROLES.MEMBER])],
   authController.updatePassword
   /*
   #swagger.tags = ['Auth']
@@ -99,6 +99,17 @@ router.put(
       $ref:'#/components/schemas/UpdatePasswordRequest'
     }
   }
+  */
+);
+
+router.post(
+  "/refresh",
+  authController.refresh
+  /*
+  #swagger.tags = ['Auth']
+  #swagger.security = [{
+    "bearerAuth": []
+  }]
   */
 );
 
