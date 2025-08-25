@@ -1,9 +1,8 @@
 import mongoose from "mongoose";
 import { encrypt } from "../utils/encryption";
-import { renderMailHTML, sendMail } from "../utils/mail/mail";
-import { CLIENT_HOST, EMAIL_SMTP_USER } from "../utils/env";
 import { ROLES } from "../utils/constant";
 import * as Yup from "yup";
+import * as bcrypt from "bcryptjs";
 
 const validatePassword = Yup.string()
   .required()
@@ -45,7 +44,6 @@ export const userDTO = Yup.object({
   email: Yup.string().email().required(),
   password: validatePassword,
   confirmPassword: validateConfirmPassword,
-  profilePicture: Yup.string().required(),
 });
 
 export type TypeUser = Yup.InferType<typeof userDTO>;
@@ -54,6 +52,7 @@ export interface User extends Omit<TypeUser, "confirmPassword"> {
   role: string;
   isActive: boolean;
   activationCode: string;
+  profilePicture?: string | FileList;
   refreshToken?: string | null;
   createdAt?: string;
 }
@@ -108,47 +107,18 @@ const UserSchema = new Schema<User>(
 
 // Dilakukan sebelum object user terbentuk (save)
 // password di enkripsi dan activationCode dibuat melalui enkripsi id user
-UserSchema.pre("save", function (next) {
+UserSchema.pre("save", async function (next) {
   const user = this;
 
   if (user.isModified("password")) {
-    user.password = encrypt(user.password);
+    user.password = await bcrypt.hash(user.password, 10);
   }
 
-  if (user.isModified("_id")) {
-    user.activationCode = encrypt(user.id);
+  if (user.isNew) {
+    user.activationCode = encrypt(user._id.toString());
   }
 
   next();
-});
-
-// Dilakukan setelah object user terbentuk (save)
-UserSchema.post("save", async function (doc, next) {
-  try {
-    if (doc.isNew) {
-      const user = doc;
-      console.log("Send Email to:", user.email);
-
-      const contentMail = await renderMailHTML("registration-success.ejs", {
-        username: user.username,
-        fullName: user.fullName,
-        email: user.email,
-        createdAt: user.createdAt,
-        activationLink: `${CLIENT_HOST}/auth/activation?code=${user.activationCode}`,
-      });
-
-      await sendMail({
-        from: EMAIL_SMTP_USER,
-        to: user.email,
-        subject: "Aktivasi Akun Anda",
-        html: contentMail,
-      });
-    }
-  } catch (error) {
-    console.log("Error:", error);
-  } finally {
-    next();
-  }
 });
 
 // remove ini agar tidak terlihat oleh user

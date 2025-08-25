@@ -103,7 +103,7 @@ router.put(
 );
 
 router.post(
-  "/refresh",
+  "/auth/refresh",
   authController.refresh
   /*
   #swagger.tags = ['Auth']

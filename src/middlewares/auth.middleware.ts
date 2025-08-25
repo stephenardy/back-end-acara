@@ -16,12 +16,15 @@ export default (req: Request, res: Response, next: NextFunction) => {
     return response.unauthorized(res);
   }
 
-  const user = getUserData(token);
+  try {
+    const user = getUserData(token);
+    (req as IReqUser).user = user;
+    next();
+  } catch (error: any) {
+    if (error.name === "TokenExpiredError") {
+      return response.tokenExpired(res, error);
+    }
 
-  if (!user) {
-    return response.unauthorized(res);
+    return response.unauthorized(res, "Invalid Token");
   }
-
-  (req as IReqUser).user = user;
-  next();
 };

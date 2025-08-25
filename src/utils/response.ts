@@ -104,13 +104,31 @@ export default {
       .cookie("refreshToken", data.refreshToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production", // only https in prod
+        // secure: false, // only https in prod
         sameSite: "strict",
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
       })
       .json({
         success: true,
         message,
-        data: { accessToken: data.accessToken },
+        data: {
+          accessToken: data.accessToken,
+          // refreshToken: data.refreshToken,
+        },
       });
+  },
+
+  tokenExpired(res: Response, error: any, message: string = "Token Expired") {
+    res.status(401).json({
+      meta: {
+        status: 401,
+        message,
+      },
+      data: {
+        name: error.name,
+        message: error.message,
+        expiredAt: error.expiredAt,
+      },
+    });
   },
 };

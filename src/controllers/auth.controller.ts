@@ -5,7 +5,6 @@ import UserModel, {
   userLoginDTO,
   userUpdatePasswordDTO,
 } from "../models/user.model";
-import { encrypt } from "../utils/encryption";
 import {
   generateAccessToken,
   generateRefreshToken,
@@ -14,6 +13,9 @@ import {
 import { IReqUser } from "../utils/interfaces";
 import response from "../utils/response";
 import { JwtPayload } from "jsonwebtoken";
+import bcrypt from "bcryptjs";
+import { renderMailHTML, sendMail } from "../utils/mail/mail";
+import { CLIENT_HOST, EMAIL_SMTP_USER } from "../utils/env";
 
 type TRegister = {
   fullName: string;
@@ -93,13 +95,17 @@ export default {
     const user = await UserModel.findById(userId);
 
     // kalau user gak ada atau password existing tidak terdaftar
-    if (!user || user.password !== encrypt(oldPassword))
-      return response.notFound(res, "user not found");
+    if (!user) return response.notFound(res, "user not found");
+
+    const validatePassword = await bcrypt.compare(oldPassword, user.password);
+
+    if (!validatePassword)
+      return response.error(res, null, "password not match");
 
     const result = await UserModel.findByIdAndUpdate(
       userId,
       {
-        password: encrypt(password),
+        password: await bcrypt.hash(password, 10),
       },
       {
         new: true,
@@ -136,11 +142,28 @@ export default {
         );
       }
 
+      // Create User
       const result = await UserModel.create({
         fullName,
         username,
         email,
         password,
+      });
+
+      // Send Mail
+      const contentMail = await renderMailHTML("registration-success.ejs", {
+        username: result.username,
+        fullName: result.fullName,
+        email: result.email,
+        createdAt: result.createdAt,
+        activationLink: `${CLIENT_HOST}/auth/activation?code=${result.activationCode}`,
+      });
+
+      await sendMail({
+        from: EMAIL_SMTP_USER,
+        to: result.email,
+        subject: "Aktivasi Akun Anda",
+        html: contentMail,
       });
 
       response.success(res, result, "Register Successful!");
@@ -177,8 +200,10 @@ export default {
       }
 
       // validasi password
-      const validatePassword: boolean =
-        encrypt(password) === userByIdentifier.password;
+      const validatePassword: boolean = await bcrypt.compare(
+        password,
+        userByIdentifier.password
+      );
 
       if (!validatePassword) {
         return response.unauthorized(res, "Password not match");
@@ -243,10 +268,13 @@ export default {
 
   async refresh(req: Request, res: Response) {
     try {
-      const { token } = req.body;
-      if (!token) return response.error(res, null, "no refresh token provided");
+      // get token from cookie OR body
+      const token = req.cookies?.refreshToken || req.body?.token;
+
+      if (!token) return response.notFound(res, "no refresh token provided");
 
       const decoded = verifyRefreshToken(token) as JwtPayload;
+
       const user = await UserModel.findById(decoded.id);
       if (!user) return response.notFound(res, "user not found");
 
@@ -259,17 +287,9 @@ export default {
         role: user.role,
       });
 
-      const newRefreshToken = generateRefreshToken({
-        id: user.id,
-        role: user.role,
-      });
-
-      user.refreshToken = newRefreshToken;
-      await user.save();
-
       response.success(
         res,
-        { accessToken: newAccessToken, refreshToken: newRefreshToken },
+        { accessToken: newAccessToken },
         "success refresh token"
       );
     } catch (error) {
