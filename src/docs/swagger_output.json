@@ -79,8 +79,8 @@
         ],
         "description": "",
         "responses": {
-          "401": {
-            "description": "Unauthorized"
+          "default": {
+            "description": ""
           }
         },
         "security": [
@@ -125,8 +125,8 @@
         ],
         "description": "",
         "responses": {
-          "401": {
-            "description": "Unauthorized"
+          "default": {
+            "description": ""
           }
         },
         "security": [
@@ -158,8 +158,8 @@
         ],
         "description": "",
         "responses": {
-          "401": {
-            "description": "Unauthorized"
+          "default": {
+            "description": ""
           }
         },
         "security": [
@@ -199,21 +199,7 @@
           {
             "bearerAuth": []
           }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "token": {
-                    "example": "any"
-                  }
-                }
-              }
-            }
-          }
-        }
+        ]
       }
     },
     "/orders": {
@@ -223,8 +209,8 @@
         ],
         "description": "",
         "responses": {
-          "401": {
-            "description": "Unauthorized"
+          "default": {
+            "description": ""
           }
         },
         "security": [
@@ -277,8 +263,8 @@
           }
         ],
         "responses": {
-          "401": {
-            "description": "Unauthorized"
+          "default": {
+            "description": ""
           }
         },
         "security": [
@@ -305,8 +291,8 @@
           }
         ],
         "responses": {
-          "401": {
-            "description": "Unauthorized"
+          "default": {
+            "description": ""
           }
         },
         "security": [
@@ -331,8 +317,8 @@
           }
         ],
         "responses": {
-          "401": {
-            "description": "Unauthorized"
+          "default": {
+            "description": ""
           }
         },
         "security": [
@@ -359,8 +345,8 @@
           }
         ],
         "responses": {
-          "401": {
-            "description": "Unauthorized"
+          "default": {
+            "description": ""
           }
         },
         "security": [
@@ -387,8 +373,8 @@
           }
         ],
         "responses": {
-          "401": {
-            "description": "Unauthorized"
+          "default": {
+            "description": ""
           }
         },
         "security": [
@@ -415,8 +401,8 @@
           }
         ],
         "responses": {
-          "401": {
-            "description": "Unauthorized"
+          "default": {
+            "description": ""
           }
         },
         "security": [
@@ -456,8 +442,8 @@
           }
         ],
         "responses": {
-          "401": {
-            "description": "Unauthorized"
+          "default": {
+            "description": ""
           }
         },
         "security": [
@@ -474,8 +460,8 @@
         ],
         "description": "",
         "responses": {
-          "401": {
-            "description": "Unauthorized"
+          "default": {
+            "description": ""
           }
         },
         "security": [
@@ -521,6 +507,13 @@
           },
           {
             "name": "search",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "isShow",
             "in": "query",
             "schema": {
               "type": "string"
@@ -572,8 +565,8 @@
           }
         ],
         "responses": {
-          "401": {
-            "description": "Unauthorized"
+          "default": {
+            "description": ""
           }
         },
         "security": [
@@ -613,8 +606,8 @@
           }
         ],
         "responses": {
-          "401": {
-            "description": "Unauthorized"
+          "default": {
+            "description": ""
           }
         },
         "security": [
@@ -631,8 +624,8 @@
         ],
         "description": "",
         "responses": {
-          "401": {
-            "description": "Unauthorized"
+          "default": {
+            "description": ""
           }
         },
         "security": [
@@ -729,8 +722,8 @@
           }
         ],
         "responses": {
-          "401": {
-            "description": "Unauthorized"
+          "default": {
+            "description": ""
           }
         },
         "security": [
@@ -770,8 +763,8 @@
           }
         ],
         "responses": {
-          "401": {
-            "description": "Unauthorized"
+          "default": {
+            "description": ""
           }
         },
         "security": [
@@ -811,8 +804,8 @@
         ],
         "description": "",
         "responses": {
-          "401": {
-            "description": "Unauthorized"
+          "default": {
+            "description": ""
           }
         },
         "security": [
@@ -845,8 +838,8 @@
         ],
         "description": "",
         "responses": {
-          "401": {
-            "description": "Unauthorized"
+          "default": {
+            "description": ""
           }
         },
         "security": [
@@ -882,8 +875,8 @@
         ],
         "description": "",
         "responses": {
-          "401": {
-            "description": "Unauthorized"
+          "default": {
+            "description": ""
           }
         },
         "security": [
@@ -915,8 +908,8 @@
         ],
         "description": "",
         "responses": {
-          "401": {
-            "description": "Unauthorized"
+          "default": {
+            "description": ""
           }
         },
         "security": [
@@ -1013,8 +1006,8 @@
           }
         ],
         "responses": {
-          "401": {
-            "description": "Unauthorized"
+          "default": {
+            "description": ""
           }
         },
         "security": [
@@ -1054,8 +1047,8 @@
           }
         ],
         "responses": {
-          "401": {
-            "description": "Unauthorized"
+          "default": {
+            "description": ""
           }
         },
         "security": [
@@ -1072,8 +1065,8 @@
         ],
         "description": "",
         "responses": {
-          "401": {
-            "description": "Unauthorized"
+          "default": {
+            "description": ""
           }
         },
         "security": [
@@ -1200,8 +1193,8 @@
           }
         ],
         "responses": {
-          "401": {
-            "description": "Unauthorized"
+          "default": {
+            "description": ""
           }
         },
         "security": [
@@ -1241,8 +1234,8 @@
           }
         ],
         "responses": {
-          "401": {
-            "description": "Unauthorized"
+          "default": {
+            "description": ""
           }
         },
         "security": [

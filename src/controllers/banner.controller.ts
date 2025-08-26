@@ -16,27 +16,29 @@ export default {
   },
   async findAll(req: IReqUser, res: Response) {
     try {
-      const {
-        page = 1,
-        limit = 10,
-        search,
-      } = req.query as unknown as IPaginationQuery;
+      const { page = 1, limit = 10, search, isShow } = req.query;
 
-      const query: FilterQuery<TypeBanner> = {};
+      const buildQuery = (filter: any) => {
+        const query: FilterQuery<TypeBanner> = {};
 
-      if (search) {
-        Object.assign(query, {
-          ...query,
-          $text: {
-            $search: search,
-          },
-        });
-      }
+        if (filter.search) {
+          query.$text = { $search: filter.search };
+        }
+
+        if (filter.isShow === "true") {
+          query.isShow = true;
+        }
+
+        return query;
+      };
+
+      const query = buildQuery({ search, isShow });
 
       const result = await BannerModel.find(query)
-        .limit(limit)
-        .skip((page - 1) * 10)
+        .limit(+limit)
+        .skip((+page - 1) * +limit)
         .sort({ createdAt: -1 })
+        .lean()
         .exec();
 
       const count = await BannerModel.countDocuments(query);
@@ -46,8 +48,8 @@ export default {
         result,
         {
           total: count,
-          current: page,
-          totalPages: Math.ceil(count / limit),
+          current: +page,
+          totalPages: Math.ceil(count / +limit),
         },
         "success find all banners"
       );
