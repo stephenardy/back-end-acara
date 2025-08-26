@@ -19,6 +19,7 @@ async function init() {
     app.use(
       cors({
         origin: process.env.CLIENT_HOST,
+        methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
         credentials: true,
       })
     );
