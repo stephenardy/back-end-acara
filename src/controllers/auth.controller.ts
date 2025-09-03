@@ -221,15 +221,31 @@ export default {
         role: userByIdentifier.role,
       });
 
+      // console.log("LOGIN: Generated Refresh Token:", refreshToken); // Log the new token
+
       userByIdentifier.refreshToken = refreshToken;
       await userByIdentifier.save();
 
-      response.successWithCookie(
-        res,
-        { accessToken, refreshToken },
-        "User found"
-      );
-      // response.success(res, { accessToken }, "User login successfuly");
+      // Manually refetch the user to confirm the save worked
+      // const savedUser = await UserModel.findById(userByIdentifier._id).select(
+      //   "+refreshToken"
+      // );
+      // console.log("LOGIN: Token in DB after save:", savedUser?.refreshToken);
+
+      res.cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production", // only https in prod and can use http (internal/localhost) in development
+        sameSite: "none",
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+        // path: "/api/auth/refresh",
+      });
+
+      // response.successWithCookie(
+      //   res,
+      //   { accessToken, refreshToken },
+      //   "User found"
+      // );
+      response.success(res, { accessToken }, "User login successfuly");
     } catch (error) {
       response.error(res, error, "Login failed");
     }
@@ -269,16 +285,23 @@ export default {
   async refresh(req: Request, res: Response) {
     try {
       // get token from cookie OR body
-      const token = req.cookies?.refreshToken || req.body?.token;
+      // const token = req.cookies?.refreshToken || req.body?.token;
+      const token = req.cookies?.refreshToken;
+      // console.log("REFRESH: Token from cookie:", token);
 
       if (!token) return response.notFound(res, "no refresh token provided");
 
-      const decoded = verifyRefreshToken(token) as JwtPayload;
+      const decoded = verifyRefreshToken(token);
 
       const user = await UserModel.findById(decoded.id);
       if (!user) return response.notFound(res, "user not found");
 
+      // console.log("user after findById", user);
+
+      // console.log("REFRESH: Token from DB:", user.refreshToken);
+
       if (user.refreshToken !== token) {
+        console.error("TOKEN MISMATCH!");
         return response.unauthorized(res, "invalid refresh token");
       }
 

@@ -1,7 +1,7 @@
 import express from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
-
+import cookieParser from "cookie-parser";
 import router from "./routes/api";
 import db from "./utils/database";
 import docs from "./docs/route";
@@ -24,8 +24,10 @@ async function init() {
       })
     );
     app.use(bodyParser.json());
+    app.use(cookieParser([]));
 
     app.use("/api", router);
+
     docs(app);
 
     app.use(errorMiddleware.serverRoute());

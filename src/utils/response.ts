@@ -99,23 +99,24 @@ export default {
   },
 
   // Success and store data (refresh token) in cookie
-  successWithCookie(res: Response, data: any, message: string) {
-    res
-      .cookie("refreshToken", data.refreshToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production" ? true : false, // only https in prod and can use http (internal/localhost) in development
-        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-      })
-      .json({
-        success: true,
-        message,
-        data: {
-          accessToken: data.accessToken,
-          // refreshToken: data.refreshToken,
-        },
-      });
-  },
+  // successWithCookie(res: Response, data: any, message: string) {
+  //   res
+  //     .cookie("refreshToken", data.refreshToken, {
+  //       httpOnly: true,
+  //       secure: process.env.NODE_ENV === "production", // only https in prod and can use http (internal/localhost) in development
+  //       sameSite: "none",
+  //       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+  //       // path: "/api/auth/refresh",
+  //     })
+  //     .json({
+  //       success: true,
+  //       message,
+  //       data: {
+  //         accessToken: data.accessToken,
+  //         // refreshToken: data.refreshToken,
+  //       },
+  //     });
+  // },
 
   tokenExpired(res: Response, error: any, message: string = "Token Expired") {
     res.status(401).json({

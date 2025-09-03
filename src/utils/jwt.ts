@@ -5,6 +5,7 @@ import { IUserToken } from "./interfaces";
 // Access Token
 export const generateAccessToken = (user: IUserToken): string => {
   const token = jwt.sign(user, ACCESS_SECRET, { expiresIn: "15m" });
+  // const token = jwt.sign(user, ACCESS_SECRET, { expiresIn: "30s" });
   return token;
 };
 
@@ -15,7 +16,8 @@ export const getUserData = (token: string) => {
 
 // Refresh Token
 export const generateRefreshToken = (user: IUserToken): string => {
-  return jwt.sign(user, REFRESH_SECRET, { expiresIn: "7d" });
+  const token = jwt.sign(user, REFRESH_SECRET, { expiresIn: "7d" });
+  return token;
 };
 
 export const verifyRefreshToken = (token: string) => {
